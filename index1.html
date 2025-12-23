@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Professional Resume Builder</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style1.css" />
+</head>
+<body>
+  <header class="main-header">
+    <h1><i class="fas fa-file-alt"></i> Professional Resume Builder</h1>
+
+    <div class="header-controls">
+      <button class="btn btn-secondary" type="button" onclick="toggleSettings()" title="Open settings panel">
+        <i class="fas fa-cog"></i> Settings
+      </button>
+
+      <button class="btn btn-primary" type="button" onclick="openPreview()" title="Open resume preview">
+        <i class="fas fa-eye"></i> Preview
+      </button>
+
+      <button class="btn btn-primary" type="button" onclick="saveAsWord()" title="Download resume as Word (.doc)">
+        <i class="fas fa-file-word"></i> Save as Word
+      </button>
+
+      <button class="btn btn-primary" type="button" onclick="printResume()" title="Print / Save as PDF">
+        <i class="fas fa-print"></i> Print / PDF
+      </button>
+    </div>
+  </header>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-content">
+      <div class="setting-group">
+        <label>Header Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="headerColor" value="#2c3e50" onchange="updateColors()" title="Choose header color">
+          <span id="headerColorValue">#2c3e50</span>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label>Accent Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="accentColor" value="#3498db" onchange="updateColors()" title="Choose accent color">
+          <span id="accentColorValue">#3498db</span>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label>Title Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="titleColor" value="#2c3e50" onchange="updateColors()" title="Choose section title color">
+          <span id="titleColorValue">#2c3e50</span>
+        </div>
+      </div>
+
+      <div class="setting-group section-order-container">
+        <label><i class="fas fa-sort"></i> Section Order (Drag to reorder)</label>
+        <div id="sectionOrder"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container single-pane" id="appContainer">
+    <div class="form-panel fullwidth" id="formPanel">
+      <form id="resumeForm" novalidate>
+
+        <!-- Personal Information -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <h3><i class="fas fa-user"></i> Personal Information</h3>
+          </div>
+
+          <div class="form-group">
+            <label>Profile Photo</label>
+            <div class="photo-upload-container">
+              <div class="photo-preview" id="photoPreview">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="photo-upload-btn">
+                <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)"
+                       data-tooltip="Optional: Upload a clear professional photo (max 5MB).">
+                <label for="photoInput" title="Upload photo">
+                  <i class="fas fa-upload"></i> Upload Photo
+                </label>
+                <button class="btn btn-danger btn-small" style="margin-left: 0.5rem; display: none;"
+                        id="removePhotoBtn" type="button" onclick="removePhoto()" title="Remove photo">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="field-error" id="err-photoInput"></div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="fullName" required minlength="2" placeholder="John Doe"
+                     data-tooltip="Enter your full legal name (required).">
+              <div class="field-error" id="err-fullName"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Job Title *</label>
+              <input type="text" id="jobTitle" required minlength="2" placeholder="Software Engineer"
+                     data-tooltip="Your current role or target role (required).">
+              <div class="field-error" id="err-jobTitle"></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" id="email" required placeholder="john@example.com"
+                     data-tooltip="Use a professional email address (required).">
+              <div class="field-error" id="err-email"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Phone *</label>
+              <input type="tel" id="phone" required placeholder="+1 (555) 123-4567"
+                     data-tooltip="Enter a valid phone number (required).">
+              <div class="field-error" id="err-phone"></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Location *</label>
+              <input type="text" id="location" required placeholder="New York, NY"
+                     data-tooltip="City, State, Country (required).">
+              <div class="field-error" id="err-location"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Website</label>
+              <input type="url" id="website" placeholder="https://johndoe.com"
+                     data-tooltip="Optional: Portfolio website.">
+              <div class="field-error" id="err-website"></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>LinkedIn URL</label>
+              <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username"
+                     data-tooltip="Optional: LinkedIn profile link.">
+              <div class="field-error" id="err-linkedin"></div>
+            </div>
+
+            <div class="form-group">
+              <label>GitHub URL</label>
+              <input type="url" id="github" placeholder="https://github.com/username"
+                     data-tooltip="Optional: GitHub profile link.">
+              <div class="field-error" id="err-github"></div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Facebook URL</label>
+              <input type="url" id="facebook" placeholder="https://facebook.com/username"
+                     data-tooltip="Optional: Facebook profile link.">
+              <div class="field-error" id="err-facebook"></div>
+            </div>
+
+            <div class="form-group">
+              <label>YouTube URL</label>
+              <input type="url" id="youtube" placeholder="https://youtube.com/@username"
+                     data-tooltip="Optional: YouTube channel link.">
+              <div class="field-error" id="err-youtube"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Objective -->
+        <div class="form-section" data-section="objective">
+          <div class="form-section-header">
+            <h3><i class="fas fa-bullseye"></i> Career Objective</h3>
+          </div>
+          <div class="form-group">
+            <label>Professional Summary *</label>
+            <textarea id="objective" maxlength="500" required minlength="20"
+                      placeholder="Write a brief professional summary..."
+                      data-tooltip="Required: 20+ characters."></textarea>
+            <div class="char-counter" id="objectiveCounter">0 / 500</div>
+            <div class="field-error" id="err-objective"></div>
+          </div>
+        </div>
+
+        <!-- Work Experience -->
+        <div class="form-section" data-section="experience">
+          <div class="form-section-header">
+            <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+          </div>
+          <div id="experienceContainer"></div>
+          <button class="add-more-btn" type="button" onclick="addExperience()" title="Add another work experience">
+            <i class="fas fa-plus"></i> Add Work Experience
+          </button>
+        </div>
+
+        <!-- Education -->
+        <div class="form-section" data-section="education">
+          <div class="form-section-header">
+            <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+          </div>
+          <div id="educationContainer"></div>
+          <button class="add-more-btn" type="button" onclick="addEducation()" title="Add another education">
+            <i class="fas fa-plus"></i> Add Education
+          </button>
+        </div>
+
+        <!-- Skills -->
+        <div class="form-section" data-section="skills">
+          <div class="form-section-header">
+            <h3><i class="fas fa-cogs"></i> Skills</h3>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-cat-header"><h4>Personal Skills</h4></div>
+            <div class="skill-input-row">
+              <input type="text" id="personalSkillInput" placeholder="e.g., Communication"
+                     data-tooltip="Optional: Add personal skill. Press Enter or click Add.">
+              <button class="btn-add-inline" type="button" onclick="addSkillFromInput('personal')"><i class="fas fa-plus"></i> Add</button>
+            </div>
+            <div id="personalSkillsList" class="chips-list"></div>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-cat-header"><h4>Professional Skills</h4></div>
+            <div class="skill-input-row">
+              <input type="text" id="professionalSkillInput" placeholder="e.g., Team Leadership"
+                     data-tooltip="Optional: Add professional skill.">
+              <button class="btn-add-inline" type="button" onclick="addSkillFromInput('professional')"><i class="fas fa-plus"></i> Add</button>
+            </div>
+            <div id="professionalSkillsList" class="chips-list"></div>
+          </div>
+
+          <div class="skills-category">
+            <div class="skills-cat-header"><h4>Technical Skills</h4></div>
+            <div class="skill-input-row">
+              <input type="text" id="technicalSkillInput" placeholder="e.g., JavaScript"
+                     data-tooltip="Optional: Add technical skill.">
+              <button class="btn-add-inline" type="button" onclick="addSkillFromInput('technical')"><i class="fas fa-plus"></i> Add</button>
+            </div>
+            <div id="technicalSkillsList" class="chips-list"></div>
+          </div>
+        </div>
+
+        <!-- Projects -->
+        <div class="form-section" data-section="projects">
+          <div class="form-section-header">
+            <h3><i class="fas fa-project-diagram"></i> Projects</h3>
+          </div>
+          <div id="projectsContainer"></div>
+          <button class="add-more-btn" type="button" onclick="addProject()" title="Add project">
+            <i class="fas fa-plus"></i> Add Project
+          </button>
+        </div>
+
+        <!-- Certifications -->
+        <div class="form-section" data-section="certifications">
+          <div class="form-section-header">
+            <h3><i class="fas fa-certificate"></i> Certifications</h3>
+          </div>
+          <div id="certificationsContainer"></div>
+          <button class="add-more-btn" type="button" onclick="addCertification()" title="Add certification">
+            <i class="fas fa-plus"></i> Add Certification
+          </button>
+        </div>
+
+        <!-- Languages -->
+        <div class="form-section" data-section="languages">
+          <div class="form-section-header">
+            <h3><i class="fas fa-language"></i> Languages</h3>
+          </div>
+          <div class="skill-input-row">
+            <input type="text" id="languageInput" placeholder="e.g., English (Fluent)"
+                   data-tooltip="Optional: Add languages one by one.">
+            <button class="btn-add-inline" type="button" onclick="addLanguageFromInput()"><i class="fas fa-plus"></i> Add</button>
+          </div>
+          <div id="languagesList" class="chips-list"></div>
+        </div>
+
+        <!-- Hobbies -->
+        <div class="form-section" data-section="hobbies">
+          <div class="form-section-header">
+            <h3><i class="fas fa-heart"></i> Hobbies</h3>
+          </div>
+          <div class="skill-input-row">
+            <input type="text" id="hobbyInput" placeholder="e.g., Reading"
+                   data-tooltip="Optional: Add hobbies one by one.">
+            <button class="btn-add-inline" type="button" onclick="addHobbyFromInput()"><i class="fas fa-plus"></i> Add</button>
+          </div>
+          <div id="hobbiesList" class="chips-list"></div>
+        </div>
+
+        <!-- Declaration -->
+        <div class="form-section" data-section="declaration">
+          <div class="form-section-header">
+            <h3><i class="fas fa-file-signature"></i> Declaration</h3>
+          </div>
+          <div class="form-group">
+            <label>Declaration Statement *</label>
+            <textarea id="declaration" required minlength="10"
+                      placeholder="I hereby declare that the above information is true..."
+                      data-tooltip="Required: 10+ characters."></textarea>
+            <div class="field-error" id="err-declaration"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-panel modal" id="previewPanel" aria-hidden="true">
+      <button class="close-preview" type="button" onclick="closePreview()" title="Close preview">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="resume-preview" id="resumePreview">
+        <div class="resume-header" id="resumeHeader">
+          <div class="resume-photo" id="resumePhoto">
+            <div class="resume-photo-placeholder"><i class="fas fa-user"></i></div>
+          </div>
+
+          <div class="resume-header-info">
+            <h1 class="resume-name" id="previewName">Your Name</h1>
+            <p class="resume-title" id="previewTitle">Your Job Title</p>
+            <div class="resume-contact" id="previewContact"></div>
+          </div>
+        </div>
+
+        <div class="resume-body" id="resumeBody"></div>
+      </div>
+    </div>
+
+    <div id="printArea" aria-hidden="true"></div>
+  </div>
+
+  <script src="script1.js"></script>
+</body>
+</html>
